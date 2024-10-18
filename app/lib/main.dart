@@ -36,14 +36,10 @@ class _AuthPageState extends State<AuthPage> {
 
   void authenticate() {
     // ตัวอย่างข้อมูลผู้ใช้ที่ลงทะเบียนไว้
-    const registeredUsers = {
-      'king@mail.com': 'king090745', // แอดมิน
-      'user@example.com': 'password123', // ผู้ใช้ทั่วไป
-    };
-
     if (isLogin) {
       // เข้าสู่ระบบ
-      if (registeredUsers[emailController.text] == passwordController.text) {
+      if (mockUsers.containsKey(emailController.text) &&
+          mockUsers[emailController.text] == passwordController.text) {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
@@ -68,13 +64,31 @@ class _AuthPageState extends State<AuthPage> {
       }
     } else {
       // สมัครสมาชิก
-      print("สมัครสมาชิกด้วยอีเมล: ${emailController.text}");
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => CoffeeMenuPage(email: emailController.text),
-        ),
-      );
+      if (emailController.text.isNotEmpty && passwordController.text.isNotEmpty) {
+        // บันทึกข้อมูลผู้ใช้ใหม่
+        mockUsers[emailController.text] = passwordController.text;
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => CoffeeMenuPage(email: emailController.text),
+          ),
+        );
+      } else {
+        // แจ้งเตือนหากข้อมูลไม่ครบ
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text('ข้อมูลไม่ครบถ้วน'),
+            content: Text('กรุณากรอกอีเมลและรหัสผ่าน'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text('ตกลง'),
+              ),
+            ],
+          ),
+        );
+      }
     }
   }
 
@@ -224,7 +238,7 @@ class _CoffeeMenuPageState extends State<CoffeeMenuPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text('ผู้ใช้ที่ลงทะเบียน:', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                  ...mockUsers.map((user) => Text(user)).toList(),
+                  ...mockUsers.keys.map((user) => Text(user)).toList(),
                 ],
               ),
             ),

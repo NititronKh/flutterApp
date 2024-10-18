@@ -10,7 +10,6 @@ class Coffee {
 List<Coffee> mockCoffees = [];
 
 // รายการอีเมลที่ลงทะเบียน
-List<String> mockUsers = [
-  'king@mail.com',
-  'user@example.com',
-];
+Map<String, String> mockUsers = {
+  'king@mail.com': 'king090745', // แอดมิน
+};
